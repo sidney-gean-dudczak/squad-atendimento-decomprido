@@ -190,5 +190,118 @@ void imprimirHistorico(PilhaHistorico& hist) {
 int main()
 {
 
+       FilaPacientes  fila;
+    PilhaHistorico historico;
+    ListaMedicos   medicos;
+
+    int opcao = -1;
+
+    while (opcao != 0) {
+        cout << "\n=====================================================\n";
+        cout << "  SISTEMA DE ATENDIMENTO HOSPITALAR - SQUAD PSC II  \n";
+        cout << "=====================================================\n";
+        cout << "  [1] Cadastrar Medico (R3)\n";
+        cout << "  [2] Cadastrar Paciente na Fila (R1)\n";
+        cout << "  [3] Realizar Atendimento\n";
+        cout << "  [4] Ver Proximo Paciente na Fila (R1 Peek)\n";
+        cout << "  [5] Ver Ultimo Atendimento Registrado (R2 Peek)\n";
+        cout << "  [6] Imprimir Relatorio de Atendimentos (R4)\n";
+        cout << "  [7] Listar Medicos Disponiveis (R3)\n";
+        cout << "  [0] Sair do Sistema\n";
+        cout << "=====================================================\n";
+        cout << "Escolha uma opcao: ";
+
+       
+        if (!(cin >> opcao)) {
+            cout << "\n[ERRO] Entrada invalida! Por favor, digite apenas numeros de 0 a 7.\n";
+            cin.clear();
+            cin.ignore(10000, '\n');
+            opcao = -1;
+            continue;
+        }
+
+        
+        if (opcao == 1) {
+            string nome;
+            cout << "\nDigite o nome do medico (ex: Dra. Ana): ";
+            cin.ignore();
+            getline(cin, nome);
+            if (nome.empty()) {
+                cout << "[ERRO] Nome invalido! O nome do medico nao pode ser vazio.\n";
+            } else {
+                medicos.adicionarMedico(nome);
+                cout << "[SUCESSO] Medico '" << nome << "' cadastrado com sucesso!\n";
+            }
+        } 
+        else if (opcao == 2) {
+            string nome;
+            int urgencia;
+            cout << "\nDigite o nome do paciente: ";
+            cin.ignore();
+            getline(cin, nome);
+            
+            if (nome.empty()) {
+                cout << "[ERRO] Nome invalido! O nome do paciente nao pode ser vazio.\n";
+            } else {
+                cout << "Digite o nivel de urgencia (1=Baixa, 2=Media, 3=Alta): ";
+                if (!(cin >> urgencia) || (urgencia < 1 || urgencia > 3)) {
+                    cout << "[ERRO] Nivel de urgencia invalido! Digite apenas 1, 2 ou 3.\n";
+                    cin.clear();
+                    cin.ignore(10000, '\n');
+                } else {
+                    fila.enqueue(nome + " (urgencia=" + to_string(urgencia) + ")", urgencia);
+                    cout << "[SUCESSO] Paciente '" << nome << "' inserido na fila!\n";
+                }
+            }
+        } 
+        else if (opcao == 3) {
+            if (fila.isEmpty()) {
+                cout << "\n[ERRO] Nao ha pacientes na fila para atender!\n";
+            } else if (!medicos.temMedico()) {
+                cout << "\n[ERRO] Nao ha medicos disponiveis no momento!\n";
+            } else {
+                string paciente = fila.dequeue();
+                string medico   = medicos.chamarMedico();
+
+                cout << "\n[ATENDIMENTO REALIZADO] " << medico << " atende " << paciente << "\n";
+
+              
+                historico.push(medico + " -> " + paciente);
+
+                
+                medicos.adicionarMedico(medico);
+            }
+        } 
+        else if (opcao == 4) {
+            if (fila.isEmpty()) {
+                cout << "\n[ERRO] Fila de pacientes esta vazia!\n";
+            } else {
+                cout << "\n[PROXIMO PACIENTE] " << fila.frente_peek() << "\n";
+                cout << "Total na fila: " << fila.tamanho() << " paciente(s)\n";
+            }
+        } 
+        else if (opcao == 5) {
+            if (historico.isEmpty()) {
+                cout << "\n[ERRO] Nenhum atendimento foi registrado no historico ainda!\n";
+            } else {
+                cout << "\n[ULTIMO ATENDIMENTO] " << historico.peek() << "\n";
+            }
+        } 
+        else if (opcao == 6) {
+            imprimirHistorico(historico);
+        } 
+        else if (opcao == 7) {
+            cout << "\n";
+            medicos.percorrer("Medicos disponiveis");
+        } 
+        else if (opcao == 0) {
+            cout << "\nEncerrando o sistema... Ate logo!\n";
+        } 
+        else {
+            
+            cout << "\n[ERRO] Opcao invalida! Digite um numero de 0 a 7.\n";
+        }
+    }
+
     return 0;
 }
