@@ -77,78 +77,97 @@ struct FilaPacientes
     }
 };
 
-struct PilhaHistorico {
-    No* topo = nullptr;
+struct PilhaHistorico
+{
+    No *topo = nullptr;
 
-    void push(const string& nome) {
-        No* novo = new No(nome);
+    void push(const string &nome)
+    {
+        No *novo = new No(nome);
         novo->prox = topo;
         topo = novo;
     }
 
-    string pop() {
-        if (isEmpty()) return "";
-        
-        No* temp = topo;
+    string pop()
+    {
+        if (isEmpty())
+            return "";
+
+        No *temp = topo;
         string nomeRemovido = temp->nome;
         topo = topo->prox;
-        
+
         delete temp;
         return nomeRemovido;
     }
 
-    string peek() const {
-        if (isEmpty()) return "";
+    string peek() const
+    {
+        if (isEmpty())
+            return "";
         return topo->nome;
     }
 
     bool isEmpty() const { return topo == nullptr; }
 
-    ~PilhaHistorico() {
-        while (!isEmpty()) pop();
+    ~PilhaHistorico()
+    {
+        while (!isEmpty())
+            pop();
     }
 };
 
+struct ListaMedicos
+{
+    No *head = nullptr;
 
-
-struct ListaMedicos {
-    No* head = nullptr;
-
-    void adicionarMedico(const string& nome) {
-        No* novo = new No(nome);
-        if (head == nullptr) {
+    void adicionarMedico(const string &nome)
+    {
+        No *novo = new No(nome);
+        if (head == nullptr)
+        {
             head = novo;
-        } else {
-            No* p = head;
-            while (p->prox != nullptr) {
+        }
+        else
+        {
+            No *p = head;
+            while (p->prox != nullptr)
+            {
                 p = p->prox;
             }
             p->prox = novo;
         }
     }
 
-    string chamarMedico() {
-        if (!temMedico()) return "";
-        
-        No* temp = head;
+    string chamarMedico()
+    {
+        if (!temMedico())
+            return "";
+
+        No *temp = head;
         string nomeRemovido = temp->nome;
         head = head->prox;
-        
+
         delete temp;
         return nomeRemovido;
     }
 
-    void percorrer(const string& prefixo = "") const {
-        if (!prefixo.empty()) cout << prefixo << ": ";
-        if (!temMedico()) {
+    void percorrer(const string &prefixo = "") const
+    {
+        if (!prefixo.empty())
+            cout << prefixo << ": ";
+        if (!temMedico())
+        {
             cout << "(lista vazia)\n";
             return;
         }
-        
-        No* p = head;
-        while (p != nullptr) {
+
+        No *p = head;
+        while (p != nullptr)
+        {
             cout << "[" << p->nome << "]";
-            if (p->prox != nullptr) cout << " -> ";
+            if (p->prox != nullptr)
+                cout << " -> ";
             p = p->prox;
         }
         cout << "\n";
@@ -156,47 +175,52 @@ struct ListaMedicos {
 
     bool temMedico() const { return head != nullptr; }
 
-    ~ListaMedicos() {
-        while (head) {
-            No* t = head;
-            head  = head->prox;
+    ~ListaMedicos()
+    {
+        while (head)
+        {
+            No *t = head;
+            head = head->prox;
             delete t;
         }
     }
 };
 
-
-void imprimirHistorico(PilhaHistorico& hist) {
+void imprimirHistorico(PilhaHistorico &hist)
+{
     cout << "\n=== Relatorio de Atendimentos ===\n";
-    if (hist.isEmpty()) {
+    if (hist.isEmpty())
+    {
         cout << "(nenhum atendimento registrado)\n";
         return;
     }
 
     PilhaHistorico aux;
-    
-    while (!hist.isEmpty()) {
+
+    while (!hist.isEmpty())
+    {
         string at = hist.pop();
         cout << "  - " << at << "\n";
         aux.push(at);
     }
 
-    while (!aux.isEmpty()) {
+    while (!aux.isEmpty())
+    {
         hist.push(aux.pop());
     }
 }
 
-
 int main()
 {
 
-       FilaPacientes  fila;
+    FilaPacientes fila;
     PilhaHistorico historico;
-    ListaMedicos   medicos;
+    ListaMedicos medicos;
 
     int opcao = -1;
 
-    while (opcao != 0) {
+    while (opcao != 0)
+    {
         cout << "\n=====================================================\n";
         cout << "  SISTEMA DE ATENDIMENTO HOSPITALAR - SQUAD PSC II  \n";
         cout << "=====================================================\n";
@@ -211,8 +235,8 @@ int main()
         cout << "=====================================================\n";
         cout << "Escolha uma opcao: ";
 
-       
-        if (!(cin >> opcao)) {
+        if (!(cin >> opcao))
+        {
             cout << "\n[ERRO] Entrada invalida! Por favor, digite apenas numeros de 0 a 7.\n";
             cin.clear();
             cin.ignore(10000, '\n');
@@ -220,85 +244,111 @@ int main()
             continue;
         }
 
-        
-        if (opcao == 1) {
+        if (opcao == 1)
+        {
             string nome;
             cout << "\nDigite o nome do medico (ex: Dra. Ana): ";
             cin.ignore();
             getline(cin, nome);
-            if (nome.empty()) {
+            if (nome.empty())
+            {
                 cout << "[ERRO] Nome invalido! O nome do medico nao pode ser vazio.\n";
-            } else {
+            }
+            else
+            {
                 medicos.adicionarMedico(nome);
                 cout << "[SUCESSO] Medico '" << nome << "' cadastrado com sucesso!\n";
             }
-        } 
-        else if (opcao == 2) {
+        }
+        else if (opcao == 2)
+        {
             string nome;
             int urgencia;
             cout << "\nDigite o nome do paciente: ";
             cin.ignore();
             getline(cin, nome);
-            
-            if (nome.empty()) {
+
+            if (nome.empty())
+            {
                 cout << "[ERRO] Nome invalido! O nome do paciente nao pode ser vazio.\n";
-            } else {
+            }
+            else
+            {
                 cout << "Digite o nivel de urgencia (1=Baixa, 2=Media, 3=Alta): ";
-                if (!(cin >> urgencia) || (urgencia < 1 || urgencia > 3)) {
+                if (!(cin >> urgencia) || (urgencia < 1 || urgencia > 3))
+                {
                     cout << "[ERRO] Nivel de urgencia invalido! Digite apenas 1, 2 ou 3.\n";
                     cin.clear();
                     cin.ignore(10000, '\n');
-                } else {
+                }
+                else
+                {
                     fila.enqueue(nome + " (urgencia=" + to_string(urgencia) + ")", urgencia);
                     cout << "[SUCESSO] Paciente '" << nome << "' inserido na fila!\n";
                 }
             }
-        } 
-        else if (opcao == 3) {
-            if (fila.isEmpty()) {
+        }
+        else if (opcao == 3)
+        {
+            if (fila.isEmpty())
+            {
                 cout << "\n[ERRO] Nao ha pacientes na fila para atender!\n";
-            } else if (!medicos.temMedico()) {
+            }
+            else if (!medicos.temMedico())
+            {
                 cout << "\n[ERRO] Nao ha medicos disponiveis no momento!\n";
-            } else {
+            }
+            else
+            {
                 string paciente = fila.dequeue();
-                string medico   = medicos.chamarMedico();
+                string medico = medicos.chamarMedico();
 
                 cout << "\n[ATENDIMENTO REALIZADO] " << medico << " atende " << paciente << "\n";
 
-              
                 historico.push(medico + " -> " + paciente);
 
-                
                 medicos.adicionarMedico(medico);
             }
-        } 
-        else if (opcao == 4) {
-            if (fila.isEmpty()) {
+        }
+        else if (opcao == 4)
+        {
+            if (fila.isEmpty())
+            {
                 cout << "\n[ERRO] Fila de pacientes esta vazia!\n";
-            } else {
+            }
+            else
+            {
                 cout << "\n[PROXIMO PACIENTE] " << fila.frente_peek() << "\n";
                 cout << "Total na fila: " << fila.tamanho() << " paciente(s)\n";
             }
-        } 
-        else if (opcao == 5) {
-            if (historico.isEmpty()) {
+        }
+        else if (opcao == 5)
+        {
+            if (historico.isEmpty())
+            {
                 cout << "\n[ERRO] Nenhum atendimento foi registrado no historico ainda!\n";
-            } else {
+            }
+            else
+            {
                 cout << "\n[ULTIMO ATENDIMENTO] " << historico.peek() << "\n";
             }
-        } 
-        else if (opcao == 6) {
+        }
+        else if (opcao == 6)
+        {
             imprimirHistorico(historico);
-        } 
-        else if (opcao == 7) {
+        }
+        else if (opcao == 7)
+        {
             cout << "\n";
             medicos.percorrer("Medicos disponiveis");
-        } 
-        else if (opcao == 0) {
+        }
+        else if (opcao == 0)
+        {
             cout << "\nEncerrando o sistema... Ate logo!\n";
-        } 
-        else {
-            
+        }
+        else
+        {
+
             cout << "\n[ERRO] Opcao invalida! Digite um numero de 0 a 7.\n";
         }
     }
