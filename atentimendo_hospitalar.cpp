@@ -1,22 +1,23 @@
 #include <iostream>
 #include <string>
 #include <cstdlib>
+
 using namespace std;
 
 struct No {
     string nome;
-    int    urgencia;
-    No*    prox;
+    int urgencia;
+    No* prox;
     No(const string& n, int u = 0) : nome(n), urgencia(u), prox(nullptr) {}
 };
 
 struct FilaPacientes {
     No* frente = nullptr;
-    No* tras   = nullptr;
+    No* tras = nullptr;
 
     void enqueue(const string& nome, int urgencia) {
         No* novo = new No(nome, urgencia);
-        if (isEmpty()) {
+        if (frente == nullptr) {
             frente = novo;
             tras = novo;
         } else {
@@ -26,26 +27,25 @@ struct FilaPacientes {
     }
 
     string dequeue() {
-        if (isEmpty()) return "";
-        
+        if (frente == nullptr) return "";
         No* temp = frente;
         string nomeRemovido = temp->nome;
         frente = frente->prox;
-        
         if (frente == nullptr) {
             tras = nullptr;
         }
-        
         delete temp;
         return nomeRemovido;
     }
 
     string frente_peek() const {
-        if (isEmpty()) return "";
+        if (frente == nullptr) return "";
         return frente->nome;
     }
 
-    bool isEmpty() const { return frente == nullptr; }
+    bool isEmpty() const {
+        return frente == nullptr;
+    }
 
     int tamanho() const {
         int count = 0;
@@ -72,22 +72,22 @@ struct PilhaHistorico {
     }
 
     string pop() {
-        if (isEmpty()) return "";
-        
+        if (topo == nullptr) return "";
         No* temp = topo;
         string nomeRemovido = temp->nome;
         topo = topo->prox;
-        
         delete temp;
         return nomeRemovido;
     }
 
     string peek() const {
-        if (isEmpty()) return "";
+        if (topo == nullptr) return "";
         return topo->nome;
     }
 
-    bool isEmpty() const { return topo == nullptr; }
+    bool isEmpty() const {
+        return topo == nullptr;
+    }
 
     ~PilhaHistorico() {
         while (!isEmpty()) pop();
@@ -111,23 +111,20 @@ struct ListaMedicos {
     }
 
     string chamarMedico() {
-        if (!temMedico()) return "";
-        
+        if (head == nullptr) return "";
         No* temp = head;
         string nomeRemovido = temp->nome;
         head = head->prox;
-        
         delete temp;
         return nomeRemovido;
     }
 
     void percorrer(const string& prefixo = "") const {
         if (!prefixo.empty()) cout << prefixo << ": ";
-        if (!temMedico()) {
+        if (head == nullptr) {
             cout << "(lista vazia)\n";
             return;
         }
-        
         No* p = head;
         while (p != nullptr) {
             cout << "[" << p->nome << "]";
@@ -137,12 +134,14 @@ struct ListaMedicos {
         cout << "\n";
     }
 
-    bool temMedico() const { return head != nullptr; }
+    bool temMedico() const {
+        return head != nullptr;
+    }
 
     ~ListaMedicos() {
-        while (head) {
+        while (head != nullptr) {
             No* t = head;
-            head  = head->prox;
+            head = head->prox;
             delete t;
         }
     }
@@ -156,10 +155,9 @@ void imprimirHistorico(PilhaHistorico& hist) {
     }
 
     PilhaHistorico aux;
-    
     while (!hist.isEmpty()) {
         string at = hist.pop();
-        cout << "  - " << at << "\n";
+        cout << " - " << at << "\n";
         aux.push(at);
     }
 
@@ -169,127 +167,92 @@ void imprimirHistorico(PilhaHistorico& hist) {
 }
 
 int main() {
-    FilaPacientes  fila;
+    FilaPacientes fila;
     PilhaHistorico historico;
-    ListaMedicos   medicos;
+    ListaMedicos medicos;
 
     int opcao = -1;
 
     while (opcao != 0) {
-        cout << "\n=====================================================\n";
-        cout << "  SISTEMA DE ATENDIMENTO HOSPITALAR   \n";
-        cout << "=====================================================\n";
-        cout << "  [1] Cadastrar Medico\n";
-        cout << "  [2] Cadastrar Paciente na Fila\n";
-        cout << "  [3] Realizar Atendimento\n";
-        cout << "  [4] Ver Proximo Paciente na Fila\n";
-        cout << "  [5] Ver Ultimo Atendimento Registrado\n";
-        cout << "  [6] Imprimir Relatorio de Atendimentos\n";
-        cout << "  [7] Listar Medicos Disponiveis\n";
-        cout << "  [0] Sair do Sistema\n";
-        cout << "=====================================================\n";
+        cout << "\n--- SISTEMA DE ATENDIMENTO ---\n";
+        cout << "1. Cadastrar Medico\n";
+        cout << "2. Cadastrar Paciente\n";
+        cout << "3. Atender Paciente\n";
+        cout << "4. Ver Proximo Paciente\n";
+        cout << "5. Ver Ultimo Atendimento\n";
+        cout << "6. Imprimir Relatorio\n";
+        cout << "7. Listar Medicos\n";
+        cout << "0. Sair\n";
         cout << "Escolha uma opcao: ";
-
-        if (!(cin >> opcao)) {
-            cout << "\nDigite um numero de 0 a 7.\n";
-            cin.clear();
-            cin.ignore(10000, '\n');
-            opcao = -1;
-            system("pause");
-            system("cls");
-            continue;
-        }
+        cin >> opcao;
 
         if (opcao == 1) {
             string nome;
-            cout << "\nDigite o nome do medico: ";
+            cout << "Nome do medico: ";
             cin.ignore();
             getline(cin, nome);
-            if (nome.empty()) {
-                cout << "o medico precisa ter nome.\n";
-            } else {
-                medicos.adicionarMedico(nome);
-                cout << " Medico '" << nome << "' cadastrado com sucesso.\n";
-            }
-            system("pause");
-            system("cls");
-        } 
+            medicos.adicionarMedico(nome);
+            cout << "Medico cadastrado com sucesso!\n";
+        }
         else if (opcao == 2) {
             string nome;
             int urgencia;
-            cout << "\nDigite o nome do paciente: ";
+            cout << "Nome do paciente: ";
             cin.ignore();
             getline(cin, nome);
-            
-            if (nome.empty()) {
-                cout << "nome invalido.\n";
+            cout << "Urgencia (1-Baixa, 2-Media, 3-Alta): ";
+            cin >> urgencia;
+
+            if (urgencia < 1 || urgencia > 3) {
+                cout << "Erro: Urgencia deve ser 1, 2 ou 3.\n";
             } else {
-                cout << "Digite o nivel de urgencia (1=Baixa, 2=Media, 3=Alta): ";
-                if (!(cin >> urgencia) || (urgencia < 1 || urgencia > 3)) {
-                    cout << "Digite apenas 1, 2 ou 3.\n";
-                    cin.clear();
-                    cin.ignore(10000, '\n');
-                } else {
-                    fila.enqueue(nome + " (urgencia=" + to_string(urgencia) + ")", urgencia);
-                    cout << "Paciente " << nome << "' inserido na fila!\n";
-                }
+                fila.enqueue(nome, urgencia);
+                cout << "Paciente adicionado a fila!\n";
             }
-            system("pause");
-            system("cls");
-        } 
+        }
         else if (opcao == 3) {
             if (fila.isEmpty()) {
-                cout << "\nNao ha pacientes na fila para atender!\n";
+                cout << "Erro: Nao ha pacientes na fila!\n";
             } else if (!medicos.temMedico()) {
-                cout << "\nNao ha medicos disponiveis no momento!\n";
+                cout << "Erro: Nao ha medicos disponiveis!\n";
             } else {
                 string paciente = fila.dequeue();
-                string medico   = medicos.chamarMedico();
+                string medico = medicos.chamarMedico();
 
-                cout << "\nATENDIMENTO REALIZADO " << medico << " atende " << paciente << "\n";
-
+                cout << "Atendimento: " << medico << " atendeu " << paciente << "\n";
                 historico.push(medico + " -> " + paciente);
-
                 medicos.adicionarMedico(medico);
             }
-            system("pause");
-            system("cls");
-        } 
+        }
         else if (opcao == 4) {
             if (fila.isEmpty()) {
-                cout << "\nNao ha pacientes na fila!\n";
+                cout << "Fila vazia!\n";
             } else {
-                cout << "\nProximo paciente: " << fila.frente_peek() << "\n";
-                cout << "Total na fila: " << fila.tamanho() << " paciente(s)\n";
+                cout << "Proximo paciente: " << fila.frente_peek() << "\n";
             }
-            system("pause");
-            system("cls");
-        } 
+        }
         else if (opcao == 5) {
             if (historico.isEmpty()) {
-                cout << "\nNenhum atendimento foi registrado no historico ainda!\n";
+                cout << "Nenhum atendimento no historico!\n";
             } else {
-                cout << "\nULTIMO ATENDIMENTO" << historico.peek() << "\n";
+                cout << "Ultimo atendimento: " << historico.peek() << "\n";
             }
-            system("pause");
-            system("cls");
-        } 
+        }
         else if (opcao == 6) {
             imprimirHistorico(historico);
-            system("pause");
-            system("cls");
-        } 
+        }
         else if (opcao == 7) {
-            cout << "\n";
             medicos.percorrer("Medicos disponiveis");
-            system("pause");
-            system("cls");
-        } 
+        }
         else if (opcao == 0) {
-            cout << "\nEncerrando o sistema... Ate logo!\n";
-        } 
+            cout << "Saindo do programa...\n";
+        }
         else {
-            cout << "\nOpcao invalida! Digite um numero de 0 a 7.\n";
+            cout << "Opcao invalida! Tente novamente.\n";
+        }
+
+        if (opcao != 0) {
+            cout << "\n";
             system("pause");
             system("cls");
         }
