@@ -76,7 +76,7 @@ Escolha uma opcao: 2
 
 Digite o nome do paciente: Eduardo
 Digite o nivel de urgencia (1=Baixa, 2=Media, 3=Alta): 3
-[SUCESSO] Paciente 'Eduardo' inserido na fila!
+[SUCESSO] Paciente 'Eduardo' inserido na fila!!
 
 Escolha uma opcao: 3
 
